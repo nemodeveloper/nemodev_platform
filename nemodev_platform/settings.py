@@ -263,3 +263,10 @@ LOGOUT_URL = '/csa/logout/'
 AUTH_USER_MODEL = 'ext_user.ExtUser'
 
 # End CSA definition
+
+# Start tastypie config
+
+TASTYPIE_ALLOW_MISSING_SLASH = True
+TASTYPIE_DEFAULT_FORMATS = ['json']
+
+# End tastypie config

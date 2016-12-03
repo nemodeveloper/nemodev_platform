@@ -1,7 +1,7 @@
 pip==9.0.1
 setuptools==28.8.0
 
-Django==1.10.3
+Django==1.10.4
 Jinja==2.8
 Pillow==3.4.2
 whitenoise==3.2.2
@@ -9,3 +9,4 @@ whitenoise==3.2.2
 pytz==2016.7
 python-dateutil==2.6.0
 
+django-tastypie==0.13.3

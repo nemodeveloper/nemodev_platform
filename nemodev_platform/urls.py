@@ -13,18 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
 
+from src.apps.ext_user.tastypie_api import ExtUserResource
 
 from nemodev_platform import settings
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index_view'),
+
 ]
 
+user_resource = ExtUserResource()
+api_urlpatterns = [
+    url(r'^api/', include(user_resource.urls)),
+]
+
+urlpatterns += api_urlpatterns
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
 

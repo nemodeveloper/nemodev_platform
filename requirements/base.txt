@@ -5,6 +5,7 @@ Django==1.10.4
 
 Jinja2==2.8.1
 django-jinja==2.2.2
+django-jinja2==0.1
 
 Pillow==4.0.0
 

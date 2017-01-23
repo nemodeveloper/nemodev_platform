@@ -52,7 +52,8 @@ EXTERNAL_APPS = [
 ]
 
 PROJECT_APPS = [
-    'src.apps.ext_user.apps.ExtUserConfig'
+    'src.apps.ext_user.apps.ExtUserConfig',
+    'src.apps.quotes.apps.QuotesConfig'
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS + PROJECT_APPS
@@ -158,7 +159,7 @@ LOGGING = {
             'format': u'[%(levelname)s] [%(message)s]'
         },
         'sql': {
-            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_dur=%(duration)d]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
+            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
             'datefmt': "%Y-%m-%d %H:%M:%S",
         },
     },

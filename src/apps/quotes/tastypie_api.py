@@ -36,7 +36,7 @@ class QuoteResource(ModelResource):
     detail_allowed_methods = ['get']
 
     class Meta:
-        queryset = Quote.objects.select_related().all()
+        queryset = Quote.objects.select_related('author', 'category').all()
         resource_name = 'quote'
         filtering = {
             'category': ALL

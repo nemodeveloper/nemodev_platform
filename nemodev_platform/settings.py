@@ -44,11 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_jinja2',
 ]
 
 EXTERNAL_APPS = [
-
+    'django_jinja2',
 ]
 
 PROJECT_APPS = [

@@ -5,7 +5,7 @@ from django.db import models
 
 class Author(models.Model):
 
-    full_name = models.CharField(u'ФИО', max_length=40)
+    full_name = models.CharField(u'ФИО', max_length=40, db_index=True)
 
     def __str__(self):
         return self.full_name
@@ -24,7 +24,7 @@ class Author(models.Model):
 
 class Category(models.Model):
 
-    name = models.CharField(u'Название', max_length=20)
+    name = models.CharField(u'Название', max_length=20, unique=True, db_index=True)
 
     def __str__(self):
         return self.name

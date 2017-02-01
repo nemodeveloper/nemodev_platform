@@ -44,11 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_jinja2',
 ]
 
 EXTERNAL_APPS = [
-
+    'django_jinja2',
 ]
 
 PROJECT_APPS = [
@@ -158,7 +157,7 @@ LOGGING = {
             'format': u'[%(levelname)s] [%(message)s]'
         },
         'sql': {
-            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_dur=%(duration)d]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
+            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_duration=%(duration)s]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
             'datefmt': "%Y-%m-%d %H:%M:%S",
         },
     },

@@ -158,7 +158,7 @@ LOGGING = {
             'format': u'[%(levelname)s] [%(message)s]'
         },
         'sql': {
-            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
+            'format': u'[%(levelname)s] [%(asctime)s]\n[sql_duration=%(duration)s]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
             'datefmt': "%Y-%m-%d %H:%M:%S",
         },
     },

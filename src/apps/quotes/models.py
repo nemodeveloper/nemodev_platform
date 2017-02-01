@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+from src.apps.quotes.manager import QuoteManager
 
 
 class Author(models.Model):
@@ -48,6 +49,9 @@ class Quote(models.Model):
     author = models.ForeignKey(to=Author, verbose_name=u'Автор', null=True, related_name=u'quotes', related_query_name=u'quote', on_delete=models.SET_NULL)
     source = models.CharField(u'Ресурс', max_length=50, blank=True, null=True)
     year = models.CharField(u'Год', max_length=20, blank=True, null=True)
+
+    objects = models.Manager()
+    quote_manager = QuoteManager()
 
     def __str__(self):
         return self.text

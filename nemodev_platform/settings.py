@@ -270,3 +270,7 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # End tastypie config
+
+# Start telegram bot config
+TELEGRAM_BOT_TOKEN = 'testbottoken123'
+# End telegram bot config

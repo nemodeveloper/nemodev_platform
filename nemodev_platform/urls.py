@@ -25,14 +25,13 @@ from src.apps.quotes.tastypie_api import QuoteResource, CategoryResource, Author
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index_view'),
-
+    url(r'^quotes/', include('src.apps.quotes.urls', namespace='quotes')),
 ]
 
 v1_api = Api(api_name='v1')
 v1_api.register(QuoteResource())
 v1_api.register(CategoryResource())
 v1_api.register(AuthorResource())
-
 
 api_urlpatterns = [
     url(r'^api/', include(v1_api.urls)),

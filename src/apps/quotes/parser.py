@@ -33,7 +33,9 @@ class QuoteParser(object):
         for raw_category in self.raw_data:
             category = self._get_or_create_category(raw_category['name'].capitalize())
             for raw_quote in raw_category['quotes']:
-                self.quote_list.append(QuoteParser._create_quote(category, raw_quote))
+                quote = QuoteParser._create_quote(category, raw_quote)
+                if quote:
+                    self.quote_list.append(quote)
 
         Quote.objects.bulk_create(self.quote_list)
         print('Завершили обработку сырых данных!')
@@ -49,17 +51,21 @@ class QuoteParser(object):
     def _create_quote(category, raw_quote):
 
         with transaction.atomic():
-            raw_text = raw_quote['text'].replace('&nbsp;', ' ').capitalize()
+            raw_text = raw_quote['text'].\
+                replace('&nbsp;', ' ').\
+                replace('<br>', '').strip()
+
+            if not raw_text:
+                return None
 
             raw_author = raw_quote['author']
             author = None
             if raw_author:
-                raw_author.title()
                 author = QuoteParser._get_or_create_author(raw_author)
 
             raw_source = raw_quote['source']
             if raw_source:
-                raw_source = raw_source.replace('&nbsp;', ' ').capitalize()
+                raw_source = raw_source.replace('&nbsp;', ' ')
 
             raw_year = raw_quote['year']
 

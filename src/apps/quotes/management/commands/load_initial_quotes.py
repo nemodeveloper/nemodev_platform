@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 from nemodev_platform.settings import BASE_DIR
 from src.apps.quotes.parser import QuoteParser
 
-BASE_QUOTES_FILE = 'database/GreatWordsPopularQuotes.json'
+BASE_QUOTES_FILE = 'database/GreatWordsQuotes.json'
 
 
 # Загрузчик базы данных цитат

@@ -182,13 +182,27 @@ LOGGING = {
             'encoding': 'utf-8',
             'filename': os.path.join(BASE_DIR, 'logs/common.log'),
             'formatter': 'verbose',
-            'filters': ['require_debug_false'],
+            'filters': [],
+        },
+        'telegram_quote_bot_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 10 * 1024 * 1024,
+            'encoding': 'utf-8',
+            'filename': os.path.join(BASE_DIR, 'logs/telegram_quote_bot.log'),
+            'formatter': 'verbose',
+            'filters': [],
         },
     },
 
     'loggers': {
         'common_log': {
             'handlers': ['common_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'telegram_quote_bot_log': {
+            'handlers': ['telegram_quote_bot_file'],
             'level': 'INFO',
             'propagate': False,
         },

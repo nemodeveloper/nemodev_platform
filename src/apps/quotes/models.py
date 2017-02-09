@@ -53,6 +53,16 @@ class Quote(models.Model):
     objects = models.Manager()
     quote_manager = QuoteManager()
 
+    def build_quote(self):
+        quote = self.text
+        if self.author:
+            quote += '\n%s' % self.author.full_name
+        if self.source:
+            quote += '\n%s' % self.source
+        if self.year:
+            quote += '\n%s' % self.year
+        return quote
+
     def __str__(self):
         return self.text
 

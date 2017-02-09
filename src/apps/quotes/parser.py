@@ -31,7 +31,7 @@ class QuoteParser(object):
         print('Начинаем обработку сырых данных...')
 
         for raw_category in self.raw_data:
-            category = self._get_or_create_category(raw_category['name'].title())
+            category = self._get_or_create_category(raw_category['name'].capitalize())
             for raw_quote in raw_category['quotes']:
                 self.quote_list.append(QuoteParser._create_quote(category, raw_quote))
 

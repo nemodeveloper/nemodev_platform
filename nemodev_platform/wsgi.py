@@ -7,10 +7,11 @@ path = '/home/base'
 if path not in sys.path:
     sys.path.append(path)
 
-from nemodev_platform.settings_helper import *
-os.environ['DJANGO_SETTINGS_MODULE'] = SETTINGS_MODULE
+os.environ['DJANGO_SETTINGS_MODULE'] = 'nemodev_platform.settings'
 
-if PRODUCTION:
+from nemodev_platform.settings import DEBUG
+
+if not DEBUG:
     from whitenoise.django import DjangoWhiteNoise
     application = DjangoWhiteNoise(get_wsgi_application())
 else:

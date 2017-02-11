@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django_jinja.builtins import DEFAULT_EXTENSIONS
@@ -18,6 +19,9 @@ from django_jinja.builtins import DEFAULT_EXTENSIONS
 from nemodev_platform.secret_key_generator import generator
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,9 +33,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = generator.get_app_secret_key(BASE_DIR)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 ROOT_URLCONF = 'nemodev_platform.urls'
 WSGI_APPLICATION = 'nemodev_platform.wsgi.application'
 
@@ -286,5 +290,10 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # End tastypie config
 
 # Start telegram bot config
-TELEGRAM_BOT_TOKEN = 'testbottoken123'
+TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN', 'test')
 # End telegram bot config
+
+if DEBUG:
+    from .settings_dev import *
+else:
+    from .settings_prod import *

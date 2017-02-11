@@ -14,3 +14,5 @@ python-dateutil==2.6.0
 django-tastypie==0.13.3
 
 telepot==10.4
+
+django-environ==0.4.1

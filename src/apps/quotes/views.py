@@ -12,13 +12,14 @@ from django.views import View
 from nemodev_platform import settings
 from src.apps.quotes.models import Quote, Category
 
-# QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
-# QuoteTelegramBot.setWebhook('https://bot.khashtamov.com/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 from src.base.view.log import LogViewMixin
 from src.base.view.permission import CSRFExemptInMixin
 
 
 common_log = logging.getLogger('common_log')
+
+QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
+QuoteTelegramBot.setWebhook('https://138.68.73.197/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 
 
 def filter_category(func):
@@ -69,18 +70,15 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
         cmd = user_message['message'].get('text')
 
         user_command = cmd.split()
-        func = self.commands.get(user_command[0].lower())
-        # if func:
-        #     TelegramBot.sendMessage(chat_id, func(), parse_mode='Markdown')
-        # else:
-        #     TelegramBot.sendMessage(chat_id, 'I do not understand you, Sir!')
+        func = self.commands.get(user_command[0].lower()) or self.commands.get('help')
+        QuoteTelegramBot.sendMessage(chat_id, func(user_command[1:]), parse_mode='Markdown')
 
-        return JsonResponse({'text': func(user_command[1:])}, status=200)
+        return JsonResponse({}, status=200)
 
     @catch_exception
     def _get_random_quote(self, args=()):
         self.log_info('Запрошена случайная цитата')
-        return Quote.quote_manager.get_random_quotes(1)[0].text
+        return Quote.quote_manager.get_random_quotes(1)[0].build_quote()
 
     @catch_exception
     @filter_category

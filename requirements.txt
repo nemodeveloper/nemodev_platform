@@ -16,3 +16,5 @@ django-tastypie==0.13.3
 telepot==10.4
 
 django-environ==0.4.1
+
+gunicorn

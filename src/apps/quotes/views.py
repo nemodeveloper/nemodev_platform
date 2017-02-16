@@ -19,7 +19,7 @@ from src.base.view.permission import CSRFExemptInMixin
 common_log = logging.getLogger('common_log')
 
 QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
-QuoteTelegramBot.setWebhook('https://138.68.73.197/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
+QuoteTelegramBot.setWebhook('https://quotesformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 
 
 def filter_category(func):

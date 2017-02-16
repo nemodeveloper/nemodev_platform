@@ -50,8 +50,11 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
         self.commands = {
             '/start': self._display_help,
             'help': self._display_help,
+            '/help': self._display_help,
             'muse': self._get_random_quote,
-            'category': self._get_random_quote_by_category
+            '/muse': self._get_random_quote,
+            'category': self._get_random_quote_by_category,
+            '/category': self._get_random_quote_by_category
         }
 
     def get_log_name(self):

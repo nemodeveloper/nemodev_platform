@@ -72,9 +72,11 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
         chat_id = user_message['message']['chat']['id']
         cmd = user_message['message'].get('text')
 
-        user_command = cmd.split()
-        func = self.commands.get(user_command[0].lower()) or self.commands.get('help')
-        QuoteTelegramBot.sendMessage(chat_id, func(user_command[1:]), parse_mode='Markdown')
+        if cmd:
+            user_command = cmd.split()
+            what = user_command[0].split('@').lower()
+            func = self.commands.get(what) or self.commands.get('help')
+            QuoteTelegramBot.sendMessage(chat_id, func(user_command[1:]), parse_mode='Markdown')
 
         return JsonResponse({}, status=200)
 

@@ -69,8 +69,17 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
         except ValueError:
             return HttpResponseBadRequest('Invalid request body!')
 
-        chat_id = user_message['message']['chat']['id']
-        cmd = user_message['message'].get('text')
+        self.log_info('Входящее сообщение - %s' % str(user_message))
+
+        message = user_message.get('message')
+        if message:
+            self._process_message(message)
+
+        return JsonResponse({}, status=200)
+
+    def _process_message(self, message):
+        chat_id = message['chat']['id']
+        cmd = message.get('text')
 
         if cmd:
             user_command = cmd.split()
@@ -78,8 +87,6 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
             func = self._get_command(user_command[0])
             params = user_command[1:]
             QuoteTelegramBot.sendMessage(chat_id, func(params), parse_mode='Markdown')
-
-        return JsonResponse({}, status=200)
 
     def _get_command(self, raw_cmd):
         what = raw_cmd.split('@')[0].lower()

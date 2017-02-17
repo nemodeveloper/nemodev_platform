@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
+
+import telepot
 from django.template.loader import render_to_string
 
-from src.apps import QuoteTelegramBot
+from nemodev_platform import settings
+
 from src.apps.quotes.models import Quote, Category, Author
 from src.base.view.log import LogMixin
+
+QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
+QuoteTelegramBot.setWebhook('https://quotesformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 
 
 common_log = logging.getLogger('common_log')

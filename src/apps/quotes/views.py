@@ -51,10 +51,10 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
             '/start': self._display_help,
             'help': self._display_help,
             '/help': self._display_help,
-            'muse': self._get_random_quote,
-            '/muse': self._get_random_quote,
-            'category': self._get_random_quote_by_category,
-            '/category': self._get_random_quote_by_category
+            'q': self._get_random_quote,
+            '/q': self._get_random_quote,
+            'c': self._get_random_quote_by_category,
+            '/c': self._get_random_quote_by_category
         }
 
     def get_log_name(self):
@@ -74,6 +74,7 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
 
         if cmd:
             user_command = cmd.split()
+            self.log_info('Запрос пользователя - %s' % user_command)
             func = self._get_command(user_command[0])
             params = user_command[1:]
             QuoteTelegramBot.sendMessage(chat_id, func(params), parse_mode='Markdown')

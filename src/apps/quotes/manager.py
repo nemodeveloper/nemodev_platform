@@ -22,3 +22,13 @@ class QuoteManager(models.Manager):
             result = []
 
         return result
+
+    # Получить случайный набор цитат по автору
+    def get_random_quotes_by_author(self, author, count):
+        if author:
+            result = super(QuoteManager, self).get_queryset().select_related('author', 'category').filter(
+                author=author).order_by('?')[:count]
+        else:
+            result = []
+
+        return result

@@ -1,61 +1,26 @@
 import json
 
 import logging
-import telepot
 from django.http import HttpResponseBadRequest
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 
 from django.views import View
 
 from nemodev_platform import settings
-from src.apps.quotes.models import Quote, Category
+from src.apps.quotes.telegram_bot_processor import get_processor
 
-from src.base.view.log import LogViewMixin
+from src.base.view.log import LogMixin
 from src.base.view.permission import CSRFExemptInMixin
 
 
 common_log = logging.getLogger('common_log')
 
-QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
-QuoteTelegramBot.setWebhook('https://quotesformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 
-
-def filter_category(func):
-    def temp(*args, **kwargs):
-        if args[1]:
-            raw_category = args[1][0].lower().title()
-            category = Category.objects.filter(name__startswith=raw_category).first()
-            if category:
-                return func(args[0], category)
-        return 'К сожалению мне не удалось ничего найти по запросу %s' % ' '.join(args[1])
-    return temp
-
-
-def catch_exception(func):
-    def catcher(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            common_log.error(e)
-            return 'Что-то пошло не так, сообщите об это моему создателю!'
-    return catcher
-
-
-class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
+class QuoteTelegramBotView(CSRFExemptInMixin, LogMixin, View):
 
     def __init__(self, **kwargs):
         super(QuoteTelegramBotView, self).__init__(**kwargs)
-        self.commands = {
-            '/start': self._display_help,
-            'help': self._display_help,
-            '/help': self._display_help,
-            'q': self._get_random_quote,
-            '/q': self._get_random_quote,
-            'c': self._get_random_quote_by_category,
-            '/c': self._get_random_quote_by_category
-        }
 
     def get_log_name(self):
         return 'telegram_quote_bot_log'
@@ -69,43 +34,8 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogViewMixin, View):
         except ValueError:
             return HttpResponseBadRequest('Invalid request body!')
 
-        self.log_info('Входящее сообщение - %s' % str(user_message))
-
-        message = user_message.get('message')
-        if message:
-            self._process_message(message)
+        processor = get_processor(user_message)
+        if processor:
+            processor.process()
 
         return JsonResponse({}, status=200)
-
-    def _process_message(self, message):
-        chat_id = message['chat']['id']
-        cmd = message.get('text')
-
-        if cmd:
-            user_command = cmd.split()
-            self.log_info('Запрос пользователя - %s' % user_command)
-            func = self._get_command(user_command[0])
-            params = user_command[1:]
-            QuoteTelegramBot.sendMessage(chat_id, func(params), parse_mode='Markdown')
-
-    def _get_command(self, raw_cmd):
-        what = raw_cmd.split('@')[0].lower()
-        func = self.commands.get(what) or self.commands.get('help')
-        return func
-
-    @catch_exception
-    def _get_random_quote(self, args=()):
-        self.log_info('Запрошена случайная цитата')
-        return Quote.quote_manager.get_random_quotes(1)[0].build_quote()
-
-    @catch_exception
-    @filter_category
-    def _get_random_quote_by_category(self, category):
-        quotes = Quote.quote_manager.get_random_quotes_by_category(category, 1)
-        self.log_info('Запрошена случайная цитата по категории %s' % category.name)
-        return quotes[0].build_quote()
-
-    @catch_exception
-    def _display_help(self, args=()):
-        self.log_info('Запрошена помощь бота')
-        return render_to_string('quotes/telegram_bot_help.md')

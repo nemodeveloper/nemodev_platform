@@ -102,17 +102,15 @@ class BaseMessageProcessor(LogMixin):
     @filter_category
     @render_quote
     def _get_random_quote_by_category(self, category):
-        quotes = Quote.quote_manager.get_random_quotes_by_category(category, 1)
         self.log_info('Запрошена случайная цитата по категории %s' % category.name)
-        return quotes[0]
+        return Quote.quote_manager.get_random_quotes_by_category(category, 1)[0]
 
     @catch_exception
     @filter_author
     @render_quote
     def _get_random_quote_by_author(self, author):
-        quotes = Quote.quote_manager.get_random_quotes_by_author(author, 1)
         self.log_info('Запрошена случайная цитата по автору %s' % author.full_name)
-        return quotes[0]
+        return Quote.quote_manager.get_random_quotes_by_author(author, 1)[0]
 
     @catch_exception
     def _display_help(self, args=()):

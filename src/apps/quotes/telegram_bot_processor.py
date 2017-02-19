@@ -134,7 +134,7 @@ class SimpleMessageProcessor(BaseMessageProcessor):
     # получить обработчик команды клиента
     def _get_command(self, raw_cmd):
         what = raw_cmd.split('@')[0].lower()
-        func = self.commands.get(what) or self.commands.get('help')
+        func = self.commands.get(what)
         return func
 
     def get_chat_id(self):
@@ -145,8 +145,9 @@ class SimpleMessageProcessor(BaseMessageProcessor):
             user_command = self.cmd.split()
             self.log_info('SimpleMessageProcessor запрос пользователя - %s' % user_command)
             func = self._get_command(user_command[0])
-            params = user_command[1:]
-            self.send_message(func(params))
+            if func:
+                params = user_command[1:]
+                self.send_message(func(params))
 
 
 class InlineMessageProcessor(BaseMessageProcessor):

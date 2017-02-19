@@ -170,7 +170,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
         result = []
         for category in categories:
             result.append(InlineQueryResultArticle(
-                id="c|%s" % category.id, title="Category choose",
+                id="c|%s" % category.id, title=category.name,
                 input_message_content=InputTextMessageContent(message_text=category.name, parse_mode='Markdown'))
             )
 
@@ -178,17 +178,14 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
     def _get_authors(self):
         authors = Author.author_manager.get_random_author(5)
-        kb = InlineKeyboardMarkup()
+        result = []
         for author in authors:
-            kb.add(InlineKeyboardButton(text=author.full_name, callback_data="a|%s" % author.id))
+            result.append(InlineQueryResultArticle(
+                id="a|%s" % author.id, title=author.full_name,
+                input_message_content=InputTextMessageContent(message_text=author.full_name, parse_mode='Markdown'))
+            )
 
-        answer = InlineQueryResultArticle(
-            id="2", title="Author choose",
-            input_message_content=InputTextMessageContent(message_text="Выбери автора"),
-            reply_markup=kb
-        )
-
-        return [answer]
+        return result
 
     def process(self):
         command = self.commands.get(self.query)

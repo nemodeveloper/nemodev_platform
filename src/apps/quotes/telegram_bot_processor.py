@@ -90,7 +90,7 @@ class BaseMessageProcessor(LogMixin):
         QuoteTelegramBot.sendMessage(self.get_chat_id(), text, parse_mode='Markdown')
 
     def send_inline_message(self, results):
-        QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results)
+        QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results, cache_time=0)
 
     @catch_exception
     @render_quote
@@ -166,23 +166,25 @@ class InlineMessageProcessor(BaseMessageProcessor):
         }
 
     def _get_categories(self):
-        categories = Category.category_manager.get_random_category(5)
+        quotes = Quote.quote_manager.get_random_quotes(5)
         result = []
-        for category in categories:
+        for quote in quotes:
             result.append(InlineQueryResultArticle(
-                id="c|%s" % category.id, title=category.name,
-                input_message_content=InputTextMessageContent(message_text=category.name, parse_mode='Markdown'))
+                id="c|%s" % quote.category.id, title=quote.category.name,
+                input_message_content=InputTextMessageContent(
+                    message_text=quote.build_quote(), parse_mode='Markdown'))
             )
 
         return result
 
     def _get_authors(self):
-        authors = Author.author_manager.get_random_author(5)
+        quotes = Quote.quote_manager.get_random_quotes_with_author(5)
         result = []
-        for author in authors:
+        for quote in quotes:
             result.append(InlineQueryResultArticle(
-                id="a|%s" % author.id, title=author.full_name,
-                input_message_content=InputTextMessageContent(message_text=author.full_name, parse_mode='Markdown'))
+                id="a|%s" % quote.author.id, title=quote.author.full_name,
+                input_message_content=InputTextMessageContent(
+                    message_text=quote.build_quote(), parse_mode='Markdown'))
             )
 
         return result

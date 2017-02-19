@@ -32,3 +32,15 @@ class QuoteManager(models.Manager):
             result = []
 
         return result
+
+
+class CategoryManager(models.Manager):
+
+    def get_random_category(self, count):
+        return super(CategoryManager, self).get_queryset().order_by('?')[:count]
+
+
+class AuthorManager(models.Manager):
+
+    def get_random_author(self, count):
+        return super(AuthorManager, self).get_queryset().order_by('?')[:count]

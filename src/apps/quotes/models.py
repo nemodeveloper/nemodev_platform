@@ -1,12 +1,15 @@
 from django.db import models
 
 # Create your models here.
-from src.apps.quotes.manager import QuoteManager
+from src.apps.quotes.manager import QuoteManager, AuthorManager, CategoryManager
 
 
 class Author(models.Model):
 
     full_name = models.CharField(u'ФИО', max_length=40, db_index=True)
+
+    objects = models.Manager()
+    author_manager = AuthorManager()
 
     def __str__(self):
         return self.full_name
@@ -26,6 +29,9 @@ class Author(models.Model):
 class Category(models.Model):
 
     name = models.CharField(u'Название', max_length=20, unique=True, db_index=True)
+
+    objects = models.Manager()
+    category_manager = CategoryManager()
 
     def __str__(self):
         return self.name

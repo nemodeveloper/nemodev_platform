@@ -1,20 +1,21 @@
-Django==1.10.4
+Django==1.11
 
-Jinja2==2.8.1
-django-jinja==2.2.2
+Jinja2==2.9.6
+django-jinja==2.3.0
 django-jinja2==0.1
 
-Pillow==4.0.0
+Pillow==4.1.0
 
-whitenoise==3.2.2
+whitenoise==3.3.0
 
-pytz==2016.10
+pytz==2017.2
 python-dateutil==2.6.0
 
 django-tastypie==0.13.3
 
-telepot==10.4
+telepot==10.5
 
-django-environ==0.4.1
+django-environ==0.4.3
 
 gunicorn
+psycopg2

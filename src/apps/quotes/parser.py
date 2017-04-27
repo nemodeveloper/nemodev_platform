@@ -17,9 +17,13 @@ class QuoteParser(object):
         self.raw_data = []
         self.quote_list = []
 
+        self.authors_cache = {}
+        self.categories_cache = {}
+
     def process(self):
         self._parse()
         self._process_raw_data()
+        self._show_statistic()
 
     def _parse(self):
         print('Начинаем парсинг файла %s ...' % self.file_path)
@@ -33,22 +37,26 @@ class QuoteParser(object):
         for raw_category in self.raw_data:
             category = self._get_or_create_category(raw_category['name'].capitalize())
             for raw_quote in raw_category['quotes']:
-                quote = QuoteParser._create_quote(category, raw_quote)
+                quote = self._create_quote(category, raw_quote)
                 if quote:
                     self.quote_list.append(quote)
 
         Quote.objects.bulk_create(self.quote_list)
         print('Завершили обработку сырых данных!')
 
-    @staticmethod
-    def _get_or_create_category(category_name):
-        category = Category.objects.filter(name=category_name).first()
+    def _show_statistic(self):
+        print('Всего авторов - %s' % len(self.authors_cache))
+        print('Всего категорий - %s' % len(self.categories_cache))
+        print('Всего цитат - %s' % len(self.quote_list))
+
+    def _get_or_create_category(self, category_name):
+        category = self.categories_cache.get(category_name)
         if not category:
             category = Category.objects.create(name=category_name)
+            self.categories_cache[category_name] = category
         return category
 
-    @staticmethod
-    def _create_quote(category, raw_quote):
+    def _create_quote(self, category, raw_quote):
 
         with transaction.atomic():
             raw_text = raw_quote['text'].\
@@ -61,13 +69,14 @@ class QuoteParser(object):
             raw_author = raw_quote['author']
             author = None
             if raw_author:
-                author = QuoteParser._get_or_create_author(raw_author)
+                author = self._get_or_create_author(raw_author)
 
             raw_source = raw_quote['source']
             if raw_source:
-                raw_source = raw_source.replace('&nbsp;', ' ')
+                raw_source = raw_source.replace('&nbsp;', ' ').strip()
 
-            raw_year = raw_quote['year']
+            raw_year = raw_quote['year'].replace('&nbsp;', ' ').strip() \
+                if raw_quote['year'] else None
 
             quote = Quote(
                 category=category,
@@ -79,9 +88,10 @@ class QuoteParser(object):
 
             return quote
 
-    @staticmethod
-    def _get_or_create_author(author_name):
-        author = Author.objects.filter(full_name=author_name).first()
+    def _get_or_create_author(self, author_name):
+        author_name = author_name.strip()
+        author = self.authors_cache.get(author_name)
         if not author:
             author = Author.objects.create(full_name=author_name)
+            self.authors_cache[author_name] = author
         return author

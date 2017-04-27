@@ -6,7 +6,7 @@ from src.apps.quotes.manager import QuoteManager, AuthorManager, CategoryManager
 
 class Author(models.Model):
 
-    full_name = models.CharField(u'ФИО', max_length=40, db_index=True)
+    full_name = models.CharField(u'ФИО', max_length=50, db_index=True)
 
     objects = models.Manager()
     author_manager = AuthorManager()
@@ -53,8 +53,8 @@ class Quote(models.Model):
     category = models.ForeignKey(to=Category, verbose_name=u'Категория', related_name=u'quotes', related_query_name=u'quote', on_delete=models.PROTECT)
     text = models.TextField(u'Цитата')
     author = models.ForeignKey(to=Author, verbose_name=u'Автор', null=True, related_name=u'quotes', related_query_name=u'quote', on_delete=models.SET_NULL)
-    source = models.CharField(u'Ресурс', max_length=50, blank=True, null=True)
-    year = models.CharField(u'Год', max_length=20, blank=True, null=True)
+    source = models.CharField(u'Ресурс', max_length=70, blank=True, null=True)
+    year = models.CharField(u'Год', max_length=30, blank=True, null=True)
 
     objects = models.Manager()
     quote_manager = QuoteManager()

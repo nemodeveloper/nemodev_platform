@@ -213,17 +213,17 @@ LOGGING = {
         'django': {
             'level': 'WARNING',
             'handlers': ['common_file', 'console'],
-            'propagate': False,
+            'propagate': True,
         },
         'django.request': {
             'handlers': ['common_file', 'console'],
             'level': 'WARNING',
-            'propagate': False,
+            'propagate': True,
         },
         '': {
             'level': 'WARNING',
             'handlers': ['common_file', 'console'],
-            'propagate': False,
+            'propagate': True,
         }
     }
 }

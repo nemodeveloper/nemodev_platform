@@ -4,7 +4,7 @@ import logging
 import telepot
 from django.template.loader import render_to_string
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, \
-    InputTextMessageContent
+    InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton
 
 from nemodev_platform import settings
 
@@ -68,16 +68,8 @@ class BaseMessageProcessor(LogMixin):
 
     def _get_commands(self):
         return {
-            '/start': self._display_help,
-            '/commands': self._display_commands,
+            'start': self._display_help,
             'help': self._display_help,
-            '/help': self._display_help,
-            'q': self._get_random_quote,
-            '/q': self._get_random_quote,
-            'c': self._get_random_quote_by_category,
-            '/c': self._get_random_quote_by_category,
-            'a': self._get_random_quote_by_author,
-            '/a': self._get_random_quote_by_author
         }
 
     def get_chat_id(self):
@@ -86,8 +78,11 @@ class BaseMessageProcessor(LogMixin):
     def process(self):
         raise NotImplementedError('Realise me!')
 
-    def send_message(self, text):
+    def send_text_message(self, text):
         QuoteTelegramBot.sendMessage(self.get_chat_id(), text, parse_mode='Markdown')
+
+    def send_markup_message(self, text, markup):
+        QuoteTelegramBot.sendMessage(self.get_chat_id(), text, reply_markup=markup)
 
     def send_inline_message(self, results):
         QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results, cache_time=0)
@@ -116,22 +111,24 @@ class BaseMessageProcessor(LogMixin):
     def _display_help(self, args=()):
         return render_to_string('quotes/telegram_bot_help.md')
 
-    @catch_exception
-    def _display_commands(self, args=()):
-        return render_to_string('quotes/telegram_bot_commands.md')
 
-
-# Класс обрабатывает простую команду пользователя телеграм типа - message
-class SimpleMessageProcessor(BaseMessageProcessor):
+# Класс обрабатывает простую команду пользователя телеграм типа - text
+class TextMessageProcessor(BaseMessageProcessor):
 
     def __init__(self, user_message):
-        super(SimpleMessageProcessor, self).__init__(user_message)
+        super(TextMessageProcessor, self).__init__(user_message)
         self.message = self.user_message['message']
-        self.cmd = self.message.get('text')
+        self.cmd = self.message.get('text').split('/')[0]
+
+    def _get_commands(self):
+        base_commands = super(TextMessageProcessor, self)._get_commands()
+        base_commands['q'] = self._get_random_quote
+
+        return base_commands
 
     # получить обработчик команды клиента
     def _get_command(self, raw_cmd):
-        what = raw_cmd.split('@')[0].lower()
+        what = raw_cmd.split('/')[0].lower()
         func = self.commands.get(what)
         return func
 
@@ -141,11 +138,11 @@ class SimpleMessageProcessor(BaseMessageProcessor):
     def process(self):
         if self.cmd:
             user_command = self.cmd.split()
-            self.log_info('SimpleMessageProcessor запрос пользователя - %s' % user_command)
+            self.log_info('TextMessageProcessor запрос пользователя - %s' % user_command)
             func = self._get_command(user_command[0])
             if func:
                 params = user_command[1:]
-                self.send_message(func(params))
+                self.send_text_message(func(params))
 
 
 class InlineMessageProcessor(BaseMessageProcessor):
@@ -154,14 +151,13 @@ class InlineMessageProcessor(BaseMessageProcessor):
         super(InlineMessageProcessor, self).__init__(user_message)
         self.inline_message = self.user_message['inline_query']
         self.query = self.inline_message.get('query')
-        self.query = self.query.strip() if self.query else ''
+        self.query = self.query.strip().split('/')[0] if self.query else ''
 
     def _get_commands(self):
         return {
+            '': self._show_quote_choice,
             'c': self._get_categories,
-            '/c': self._get_categories,
             'a': self._get_authors,
-            '/a': self._get_authors,
         }
 
     def _get_categories(self):
@@ -188,10 +184,30 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
         return result
 
+    def _show_quote_choice(self):
+        keyboards = [
+            ['Случайная'],
+            ['По категории', 'По автору'],
+        ]
+
+        markup = ReplyKeyboardMarkup(
+            keyboard=keyboards,
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+
+        return 'Выберите тип цитаты', markup
+
+    def _get_message_sender(self):
+        if self.query == '':
+            return self.send_markup_message
+        return self.send_inline_message
+
     def process(self):
         command = self.commands.get(self.query)
         if command:
-            self.send_inline_message(command())
+            sender = self._get_message_sender()
+            sender(command())
 
     def get_chat_id(self):
         return self.inline_message['id']
@@ -199,7 +215,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
 # Маршрутизация запросов
 router = {
-    'message': SimpleMessageProcessor,
+    'message': TextMessageProcessor,
     'inline_query': InlineMessageProcessor,
 }
 

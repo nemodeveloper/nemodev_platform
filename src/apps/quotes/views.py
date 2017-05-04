@@ -34,6 +34,7 @@ class QuoteTelegramBotView(CSRFExemptInMixin, LogMixin, View):
         except ValueError:
             return HttpResponseBadRequest('Invalid request body!')
 
+        common_log.info(msg=str(user_message))
         processor = get_processor(user_message)
         if processor:
             processor.process()

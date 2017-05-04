@@ -150,7 +150,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
         super(InlineMessageProcessor, self).__init__(user_message)
         self.inline_message = self.user_message['inline_query']
         self.query = self.inline_message.get('query')
-        self.query = self.query.strip().strip('/') if self.query else ''
+        self.query = self.query.strip().strip('/').split('@')[0] if self.query else ''
 
     def _get_commands(self):
         return {
@@ -188,12 +188,15 @@ class InlineMessageProcessor(BaseMessageProcessor):
             [InlineKeyboardButton(text='Случайная', callback_data='i_random')],
             [InlineKeyboardButton(text='По категории', callback_data='i_category'), InlineKeyboardButton(text='По автору', callback_data='i_author')]
         ]
-        return InlineKeyboardMarkup(inline_keyboard=buttons)
+        markup = InlineKeyboardMarkup(inline_keyboard=buttons)
+        return 'Выберите тип цитаты', markup
 
     def process(self):
         command = self.commands.get(self.query)
         if command:
             result = command()
+            if self.query == '':
+                return self.send_markup_message(result[0], result[1])
             return self.send_inline_message(result)
 
     def get_chat_id(self):

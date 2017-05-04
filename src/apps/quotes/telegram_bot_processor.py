@@ -73,6 +73,7 @@ class BaseMessageProcessor(LogMixin):
         return {
             'start': self._display_help,
             'help': self._display_help,
+            'q': self._get_random_quote
         }
 
     def get_chat_id(self):
@@ -123,12 +124,6 @@ class TextMessageProcessor(BaseMessageProcessor):
         self.message = self.user_message['message']
         self.cmd = self.message.get('text').strip('/')
 
-    def _get_commands(self):
-        base_commands = super(TextMessageProcessor, self)._get_commands()
-        base_commands['q'] = self._get_random_quote
-
-        return base_commands
-
     # получить обработчик команды клиента
     def _get_command(self, cmd):
         return self.commands.get(cmd)
@@ -155,6 +150,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
     def _get_commands(self):
         return {
             '': self._show_quote_choice,
+            'q': self._get_random_quote,
             'c': self._get_categories,
             'a': self._get_authors,
         }

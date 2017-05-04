@@ -154,7 +154,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
     def _get_commands(self):
         return {
-            't': self._show_quote_choice,
+            '': self._show_quote_choice,
             'c': self._get_categories,
             'a': self._get_authors,
         }
@@ -188,15 +188,12 @@ class InlineMessageProcessor(BaseMessageProcessor):
             [InlineKeyboardButton(text='Случайная', callback_data='i_random')],
             [InlineKeyboardButton(text='По категории', callback_data='i_category'), InlineKeyboardButton(text='По автору', callback_data='i_author')]
         ]
-        markup = InlineKeyboardMarkup(inline_keyboard=buttons)
-        return 'Выберите тип цитаты', markup
+        return InlineKeyboardMarkup(inline_keyboard=buttons)
 
     def process(self):
         command = self.commands.get(self.query)
         if command:
             result = command()
-            if self.query == '':
-                return self.send_markup_message(result[0], result[1])
             return self.send_inline_message(result)
 
     def get_chat_id(self):

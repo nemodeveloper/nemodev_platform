@@ -184,17 +184,11 @@ class InlineMessageProcessor(BaseMessageProcessor):
         return result
 
     def _show_quote_choice(self):
-        keyboards = [
-            ['Случайная'],
-            ['По категории', 'По автору'],
+        buttons = [
+            [InlineKeyboardButton(text='Случайная', callback_data='i_random')],
+            [InlineKeyboardButton(text='По категории', callback_data='i_category'), InlineKeyboardButton('По автору', callback_date='i_author')],
         ]
-
-        markup = ReplyKeyboardMarkup(
-            keyboard=keyboards,
-            resize_keyboard=True,
-            one_time_keyboard=True
-        )
-
+        markup = InlineKeyboardMarkup(buttons)
         return 'Выберите тип цитаты', markup
 
     def process(self):

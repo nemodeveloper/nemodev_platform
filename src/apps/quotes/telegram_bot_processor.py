@@ -52,7 +52,10 @@ def catch_exception(func):
 
 def render_quote(func):
     def temp(*args, **kwargs):
-        return func(args[0], args[1]).build_quote()
+        if len(args) > 1:
+            return func(args[0], args[1]).build_quote()
+        else:
+            return func(args[0]).build_quote()
     return temp
 
 
@@ -82,14 +85,14 @@ class BaseMessageProcessor(LogMixin):
         QuoteTelegramBot.sendMessage(self.get_chat_id(), text, parse_mode='Markdown')
 
     def send_markup_message(self, text, markup):
-        QuoteTelegramBot.sendMessage(self.get_chat_id(), text=text, reply_markup=markup)
+        QuoteTelegramBot.sendMessage(chat_id=self.get_chat_id(), text=text, reply_markup=markup)
 
     def send_inline_message(self, results):
         QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results, cache_time=0)
 
     @catch_exception
     @render_quote
-    def _get_random_quote(self, args=()):
+    def _get_random_quote(self):
         self.log_info('Запрошена случайная цитата')
         return Quote.quote_manager.get_random_quotes(1)[0]
 
@@ -108,7 +111,7 @@ class BaseMessageProcessor(LogMixin):
         return Quote.quote_manager.get_random_quotes_by_author(author, 1)[0]
 
     @catch_exception
-    def _display_help(self, args=()):
+    def _display_help(self):
         return render_to_string('quotes/telegram_bot_help.md')
 
 
@@ -127,10 +130,8 @@ class TextMessageProcessor(BaseMessageProcessor):
         return base_commands
 
     # получить обработчик команды клиента
-    def _get_command(self, raw_cmd):
-        what = raw_cmd.split('/')[0].lower()
-        func = self.commands.get(what)
-        return func
+    def _get_command(self, cmd):
+        return self.commands.get(cmd)
 
     def get_chat_id(self):
         return self.message['chat']['id']

@@ -154,7 +154,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
     def _get_commands(self):
         return {
-            '': self._show_quote_choice,
+            't': self._show_quote_choice,
             'c': self._get_categories,
             'a': self._get_authors,
         }

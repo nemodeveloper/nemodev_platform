@@ -82,7 +82,7 @@ class BaseMessageProcessor(LogMixin):
         QuoteTelegramBot.sendMessage(self.get_chat_id(), text, parse_mode='Markdown')
 
     def send_markup_message(self, text, markup):
-        QuoteTelegramBot.sendMessage(self.get_chat_id(), text, reply_markup=markup)
+        QuoteTelegramBot.sendMessage(self.get_chat_id(), text=text, reply_markup=markup)
 
     def send_inline_message(self, results):
         QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results, cache_time=0)
@@ -118,7 +118,7 @@ class TextMessageProcessor(BaseMessageProcessor):
     def __init__(self, user_message):
         super(TextMessageProcessor, self).__init__(user_message)
         self.message = self.user_message['message']
-        self.cmd = self.message.get('text').split('/')[0]
+        self.cmd = self.message.get('text').strip('/')
 
     def _get_commands(self):
         base_commands = super(TextMessageProcessor, self)._get_commands()
@@ -137,12 +137,10 @@ class TextMessageProcessor(BaseMessageProcessor):
 
     def process(self):
         if self.cmd:
-            user_command = self.cmd.split()
-            self.log_info('TextMessageProcessor запрос пользователя - %s' % user_command)
-            func = self._get_command(user_command[0])
+            self.log_info('TextMessageProcessor запрос пользователя - %s' % self.cmd)
+            func = self._get_command(self.cmd)
             if func:
-                params = user_command[1:]
-                self.send_text_message(func(params))
+                self.send_text_message(func())
 
 
 class InlineMessageProcessor(BaseMessageProcessor):
@@ -151,7 +149,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
         super(InlineMessageProcessor, self).__init__(user_message)
         self.inline_message = self.user_message['inline_query']
         self.query = self.inline_message.get('query')
-        self.query = self.query.strip().split('/')[0] if self.query else ''
+        self.query = self.query.strip().strip('/') if self.query else ''
 
     def _get_commands(self):
         return {
@@ -198,16 +196,13 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
         return 'Выберите тип цитаты', markup
 
-    def _get_message_sender(self):
-        if self.query == '':
-            return self.send_markup_message
-        return self.send_inline_message
-
     def process(self):
         command = self.commands.get(self.query)
         if command:
-            sender = self._get_message_sender()
-            sender(command())
+            result = command()
+            if self.query == '':
+                return self.send_markup_message(result[0], result[1])
+            return self.send_inline_message(result)
 
     def get_chat_id(self):
         return self.inline_message['id']

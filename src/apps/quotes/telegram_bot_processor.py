@@ -193,6 +193,8 @@ class InlineMessageProcessor(BaseMessageProcessor):
             result = command()
             if self.query == '':
                 return self.send_markup_message(result[0], result[1])
+            elif self.query == 'q':
+                return self.send_text_message(result)
             return self.send_inline_message(result)
 
     def get_chat_id(self):

@@ -186,7 +186,7 @@ class InlineMessageProcessor(BaseMessageProcessor):
     def _show_quote_choice(self):
         buttons = [
             [InlineKeyboardButton(text='Случайная', callback_data='i_random')],
-            [InlineKeyboardButton(text='По категории', callback_data='i_category'), InlineKeyboardButton('По автору', callback_date='i_author')],
+            [InlineKeyboardButton(text='По категории', callback_data='i_category'), InlineKeyboardButton(text='По автору', callback_data='i_author')],
         ]
         markup = InlineKeyboardMarkup(buttons)
         return 'Выберите тип цитаты', markup

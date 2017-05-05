@@ -122,7 +122,7 @@ class TextMessageProcessor(BaseMessageProcessor):
     def __init__(self, user_message):
         super(TextMessageProcessor, self).__init__(user_message)
         self.message = self.user_message['message']
-        self.cmd = self.message.get('text').strip('/')
+        self.cmd = self.message.get('text').strip('/').split('@')[0].lower()
 
     # получить обработчик команды клиента
     def _get_command(self, cmd):
@@ -145,12 +145,11 @@ class InlineMessageProcessor(BaseMessageProcessor):
         super(InlineMessageProcessor, self).__init__(user_message)
         self.inline_message = self.user_message['inline_query']
         self.query = self.inline_message.get('query')
-        self.query = self.query.strip().strip('/').split('@')[0] if self.query else ''
+        self.query = self.query.strip().strip('/').split('@')[0].lower() if self.query else ''
 
     def _get_commands(self):
         return {
-            '': self._show_quote_choice,
-            'q': self._get_random_quote,
+            # '': self._show_quote_choice,
             'c': self._get_categories,
             'a': self._get_authors,
         }
@@ -191,10 +190,8 @@ class InlineMessageProcessor(BaseMessageProcessor):
         command = self.commands.get(self.query)
         if command:
             result = command()
-            if self.query == '':
-                return self.send_markup_message(result[0], result[1])
-            elif self.query == 'q':
-                return self.send_text_message(result)
+            # if self.query == '':
+            #     return self.send_markup_message(result[0], result[1])
             return self.send_inline_message(result)
 
     def get_chat_id(self):

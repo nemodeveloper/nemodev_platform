@@ -4,7 +4,7 @@ import logging
 import telepot
 from django.template.loader import render_to_string
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, \
-    InputTextMessageContent, ReplyKeyboardMarkup, KeyboardButton
+    InputTextMessageContent
 
 from nemodev_platform import settings
 
@@ -52,10 +52,7 @@ def catch_exception(func):
 
 def render_quote(func):
     def temp(*args, **kwargs):
-        if len(args) > 1:
-            return func(args[0], args[1]).build_quote()
-        else:
-            return func(args[0]).build_quote()
+        return func(args[0], args[1]).build_quote()
     return temp
 
 
@@ -73,7 +70,11 @@ class BaseMessageProcessor(LogMixin):
         return {
             'start': self._display_help,
             'help': self._display_help,
-            'q': self._get_random_quote
+            'q': self._get_random_quote,
+            'c': self._get_random_quote_by_category,  # engl
+            'с': self._get_random_quote_by_category,  # rus
+            'a': self._get_random_quote_by_author,
+            'а': self._get_random_quote_by_author,
         }
 
     def get_chat_id(self):
@@ -93,7 +94,7 @@ class BaseMessageProcessor(LogMixin):
 
     @catch_exception
     @render_quote
-    def _get_random_quote(self):
+    def _get_random_quote(self, args=()):
         self.log_info('Запрошена случайная цитата')
         return Quote.quote_manager.get_random_quotes(1)[0]
 
@@ -112,7 +113,7 @@ class BaseMessageProcessor(LogMixin):
         return Quote.quote_manager.get_random_quotes_by_author(author, 1)[0]
 
     @catch_exception
-    def _display_help(self):
+    def _display_help(self, args=()):
         return render_to_string('quotes/telegram_bot_help.md')
 
 
@@ -122,21 +123,24 @@ class TextMessageProcessor(BaseMessageProcessor):
     def __init__(self, user_message):
         super(TextMessageProcessor, self).__init__(user_message)
         self.message = self.user_message['message']
-        self.cmd = self.message.get('text').strip('/').split('@')[0].lower()
+
+        self.raw_query = self.message.get('text').strip('/').split()
+        self.query = self.raw_query[0].split('@')[0].lower()
+        self.params = self.raw_query[1:]
 
     # получить обработчик команды клиента
-    def _get_command(self, cmd):
-        return self.commands.get(cmd)
+    def _get_command(self):
+        return self.commands.get(self.query)
 
     def get_chat_id(self):
         return self.message['chat']['id']
 
     def process(self):
-        if self.cmd:
-            self.log_info('TextMessageProcessor запрос пользователя - %s' % self.cmd)
-            func = self._get_command(self.cmd)
+        if self.query:
+            self.log_info('TextMessageProcessor запрос пользователя - %s' % self.raw_query)
+            func = self._get_command()
             if func:
-                self.send_text_message(func())
+                self.send_text_message(func(self.params))
 
 
 class InlineMessageProcessor(BaseMessageProcessor):

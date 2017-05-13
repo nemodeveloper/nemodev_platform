@@ -5,3 +5,4 @@
 database/*.sqlite3
 logs/*.log
 nemodev_platform/configs/secret_key.txt
+.env

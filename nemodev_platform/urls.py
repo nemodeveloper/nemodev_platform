@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
+from tastypie.api import Api
 
 from src.apps.ext_user.tastypie_api import ExtUserResource
 
@@ -27,12 +28,20 @@ urlpatterns = [
 
 ]
 
-user_resource = ExtUserResource()
+v1_api = Api(api_name='v1')
+v1_api.register(ExtUserResource())
+
 api_urlpatterns = [
-    url(r'^api/', include(user_resource.urls)),
+    url(r'^api/', include(v1_api.urls)),
 ]
 
 urlpatterns += api_urlpatterns
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^debug/', include(debug_toolbar.urls)),
+    ]
 

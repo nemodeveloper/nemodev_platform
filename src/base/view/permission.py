@@ -6,31 +6,31 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 # Базовый класс проверки пользователя на наличие входа в систему
-class LoggedInMixin:
+class LoggedMixin:
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(LoggedInMixin, self).dispatch(request, *args, **kwargs)
+        return super(LoggedMixin, self).dispatch(request, *args, **kwargs)
 
 
 # Базовый класс для доступа к функционалу административной части
-class AdminInMixin:
+class AdminMixin:
 
     @method_decorator(staff_member_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(AdminInMixin, self).dispatch(request, *args, **kwargs)
+        return super(AdminMixin, self).dispatch(request, *args, **kwargs)
 
 
 # Базовый класс для работы с системы, без csrf - токена
-class CSRFExemptInMixin:
+class CSRFExemptMixin:
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(CSRFExemptInMixin, self).dispatch(request, *args, **kwargs)
+        return super(CSRFExemptMixin, self).dispatch(request, *args, **kwargs)
 
 
 # Примесь предоставляет утилитный метод для проверки прав клиента
-class UserPermInMixin:
+class UserPermMixin:
 
     # Проверить у пользователя наличие права на работу с ситемой
     def check_perm(self, user, perm_key):

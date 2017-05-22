@@ -130,11 +130,12 @@ class TextMessageProcessor(BaseMessageProcessor):
 
     # получить обработчик команды клиента
     def _get_command(self):
-        return self.commands.get(self.query)
+        return self._get_commands().get(self.query)
 
     def _get_commands(self):
         commands = super(TextMessageProcessor, self)._get_commands()
         commands['t'] = self._testButtons
+        return commands
 
     def _testButtons(self):
         buttons = [['test1'], ['test2']]

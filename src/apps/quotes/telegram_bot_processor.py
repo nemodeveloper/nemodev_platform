@@ -4,7 +4,7 @@ import logging
 import telepot
 from django.template.loader import render_to_string
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, InlineQueryResultArticle, \
-    InputTextMessageContent
+    InputTextMessageContent, ReplyKeyboardMarkup
 
 from nemodev_platform import settings
 
@@ -87,7 +87,7 @@ class BaseMessageProcessor(LogMixin):
         QuoteTelegramBot.sendMessage(self.get_chat_id(), text, parse_mode='Markdown')
 
     def send_markup_message(self, text, markup):
-        QuoteTelegramBot.sendMessage(chat_id=self.get_chat_id(), text=text, reply_markup=markup)
+        QuoteTelegramBot.sendMessage(self.get_chat_id(), text=text, reply_markup=markup)
 
     def send_inline_message(self, results):
         QuoteTelegramBot.answerInlineQuery(self.get_chat_id(), results, cache_time=0)
@@ -132,6 +132,16 @@ class TextMessageProcessor(BaseMessageProcessor):
     def _get_command(self):
         return self.commands.get(self.query)
 
+    def _get_commands(self):
+        commands = super(TextMessageProcessor, self)._get_commands()
+        commands['t'] = self._testButtons
+
+    def _testButtons(self):
+        buttons = [['test1'], ['test2']]
+        return ReplyKeyboardMarkup(
+            buttons, True, False
+        )
+
     def get_chat_id(self):
         return self.message['chat']['id']
 
@@ -140,7 +150,10 @@ class TextMessageProcessor(BaseMessageProcessor):
             self.log_info('TextMessageProcessor запрос пользователя - %s' % self.raw_query)
             func = self._get_command()
             if func:
-                self.send_text_message(func(self.params))
+                if self.query == 't':
+                    self.send_markup_message('test', func(self.params))
+                else:
+                    self.send_text_message(func(self.params))
 
 
 class InlineMessageProcessor(BaseMessageProcessor):
@@ -154,16 +167,18 @@ class InlineMessageProcessor(BaseMessageProcessor):
     def _get_commands(self):
         return {
             # '': self._show_quote_choice,
-            'c': self._get_categories,
+            'c': self._get_categories,  # engl
+            'с': self._get_categories,  # rus
             'a': self._get_authors,
+            'а': self._get_authors,
         }
 
     def _get_categories(self):
-        quotes = Quote.quote_manager.get_random_quotes(5)
+        quotes = Quote.quote_manager.get_random_quotes(10)
         result = []
         for quote in quotes:
             result.append(InlineQueryResultArticle(
-                id="c|%s" % quote.category.id, title=quote.category.name,
+                id="c|%s" % quote.category.id, title=quote.category.name, description=quote.text,
                 input_message_content=InputTextMessageContent(
                     message_text=quote.build_quote(), parse_mode='Markdown'))
             )
@@ -171,11 +186,11 @@ class InlineMessageProcessor(BaseMessageProcessor):
         return result
 
     def _get_authors(self):
-        quotes = Quote.quote_manager.get_random_quotes_with_author(5)
+        quotes = Quote.quote_manager.get_random_quotes_with_author(10)
         result = []
         for quote in quotes:
             result.append(InlineQueryResultArticle(
-                id="a|%s" % quote.author.id, title=quote.author.full_name,
+                id="a|%s" % quote.author.id, title=quote.author.full_name, description=quote.text,
                 input_message_content=InputTextMessageContent(
                     message_text=quote.build_quote(), parse_mode='Markdown'))
             )

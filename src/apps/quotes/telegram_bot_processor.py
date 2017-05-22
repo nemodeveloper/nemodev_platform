@@ -140,7 +140,7 @@ class TextMessageProcessor(BaseMessageProcessor):
     def _testButtons(self, args=()):
         buttons = [['test1'], ['test2']]
         return ReplyKeyboardMarkup(
-            buttons, True, False
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=False
         )
 
     def get_chat_id(self):

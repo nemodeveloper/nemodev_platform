@@ -137,7 +137,7 @@ class TextMessageProcessor(BaseMessageProcessor):
         commands['t'] = self._testButtons
         return commands
 
-    def _testButtons(self):
+    def _testButtons(self, args=()):
         buttons = [['test1'], ['test2']]
         return ReplyKeyboardMarkup(
             buttons, True, False

@@ -132,16 +132,16 @@ class TextMessageProcessor(BaseMessageProcessor):
     def _get_command(self):
         return self._get_commands().get(self.query)
 
-    # def _get_commands(self):
-    #     commands = super(TextMessageProcessor, self)._get_commands()
-    #     commands['t'] = self._testButtons
-    #     return commands
-    #
-    # def _testButtons(self, args=()):
-    #     buttons = [['test1'], ['test2']]
-    #     return ReplyKeyboardMarkup(
-    #         keyboard=buttons, resize_keyboard=True, one_time_keyboard=False
-    #     )
+    def _get_commands(self):
+        commands = super(TextMessageProcessor, self)._get_commands()
+        commands['t'] = self._testButtons
+        return commands
+
+    def _testButtons(self, args=()):
+        buttons = [['test1'], ['test2']]
+        return ReplyKeyboardMarkup(
+            keyboard=buttons, resize_keyboard=True, one_time_keyboard=True
+        )
 
     def get_chat_id(self):
         return self.message['chat']['id']
@@ -151,10 +151,10 @@ class TextMessageProcessor(BaseMessageProcessor):
             self.log_info('TextMessageProcessor запрос пользователя - %s' % self.raw_query)
             func = self._get_command()
             if func:
-                # if self.query == 't':
-                #     self.send_markup_message('test', func(self.params))
-                # else:
-                self.send_text_message(func(self.params))
+                if self.query == 't':
+                    self.send_markup_message('test', func(self.params))
+                else:
+                    self.send_text_message(func(self.params))
 
 
 class InlineMessageProcessor(BaseMessageProcessor):

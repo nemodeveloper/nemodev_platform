@@ -164,12 +164,26 @@ class InlineMessageProcessor(BaseMessageProcessor):
 
     def _get_commands(self):
         return {
-            # '': self._show_quote_choice,
+            '': self._get_random_quotes,
             'c': self._get_categories,  # engl
             'с': self._get_categories,  # rus
             'a': self._get_authors,
             'а': self._get_authors,
         }
+
+    def _get_random_quotes(self):
+        quotes = Quote.quote_manager.get_random_quotes(10)
+        result = []
+        i = 1
+        for quote in quotes:
+            result.append(InlineQueryResultArticle(
+                id="q|%s" % quote.id, title='Цитата #%s' % i, description=quote.text,
+                input_message_content=InputTextMessageContent(
+                    message_text=quote.build_quote(), parse_mode='Markdown'))
+            )
+            i += 1
+
+        return result
 
     def _get_categories(self):
         quotes = Quote.quote_manager.get_random_quotes(10)

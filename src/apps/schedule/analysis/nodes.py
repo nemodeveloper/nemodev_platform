@@ -5,7 +5,7 @@
 from src.apps.schedule.models import WorkPlan, Lesson, SchoolQuarter
 
 LESSON_EVENTS = (
-    'CANCELED', 'EDIT', 'MOVED'
+    'CANCEL', 'EDIT', 'MOVE'
 )
 
 
@@ -23,12 +23,20 @@ class BaseNode(object):
     def __init__(self):
         super(BaseNode, self).__init__()
 
+    def _build_base_verdict(self):
+        return {
+            'type': '',
+            'errors': [],
+        }
+
     def analyze(self, event_info):
         raise NotImplementedError('Метод анализа расписания узлом')
 
 
 # Узел нагрузки
 class LoadNode(BaseNode):
+
+    NODE_EVENTS = LESSON_EVENTS
 
     # data - урок для анализа
     def __init__(self, data):
@@ -62,12 +70,6 @@ class LoadNode(BaseNode):
                                      school_class=self.data.school_class,
                                      lesson_status='CANCELED')
 
-    def _build_base_verdict(self):
-        return {
-            'type': '',
-            'errors': [],
-        }
-
     def analyze(self, event_info):
         verdict = self._build_base_verdict()
 
@@ -77,7 +79,7 @@ class LoadNode(BaseNode):
 
         event_type = event_info['type']
         verdict['type'] = event_type
-        if event_info in LESSON_EVENTS:
+        if event_info in LoadNode.NODE_EVENTS:
             errors = verdict['errors']
             base_kwargs = {
                 'plan_count': work_plan_subject_count,
@@ -116,11 +118,30 @@ class LoadNode(BaseNode):
 # Узел согласования
 class CoordinationNode(BaseNode):
 
-    def __init__(self):
+    NODE_EVENTS = (
+        'EDIT', 'MOVE'
+    )
+
+    # data - сформированный урок после редактирования
+    def __init__(self, data):
         super(CoordinationNode, self).__init__()
+        self.edit_lesson = data
+        self.base_lesson = Lesson.objects.get(id=self.edit_lesson.id)
 
     def analyze(self, event_info):
-        pass
+        verdict = self._build_base_verdict()
+
+        event_type = event_info['type']
+        verdict['type'] = event_type
+        if event_info in CoordinationNode.NODE_EVENTS:
+            pass
+        else:
+            verdict['errors'].append(
+                NodeAnalyzeError('NOT_CORRECT_EVENT',
+                                 'Не корректное событие по работе с расписанием для узла согласования - %s' % event_type)
+            )
+
+        return verdict
 
 
 # Узел приоритетов

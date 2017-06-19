@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %} Просмотр учебных кабинетов {% endblock %}
+
+{% block content %}
+    <h1>Список учебных кабинетов</h1>
+    <a href="{{ url('classroom_add_view') }}">Добавить новый учебный кабинет</a>
+    <ul>
+        {% for classroom in classrooms %}
+            <li><a href="{{ url('classroom_update_view', id=classroom.id) }}">{{ classroom.room_name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

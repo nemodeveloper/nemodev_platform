@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from nemodev_platform.settings import *
 
+SHOW_SQL_IN_CONSOLE = False
+
 DEBUG_APPS = [
     'debug_toolbar'
 ]
@@ -13,11 +15,12 @@ DATABASES = {
     'default': env.db(),
 }
 
-LOGGING['loggers']['django.db.backends'] = {
-            'level': 'DEBUG',
-            'handlers': ['console_sql'],
-            'propagate': False,
-}
+if SHOW_SQL_IN_CONSOLE:
+    LOGGING['loggers']['django.db.backends'] = {
+                'level': 'DEBUG',
+                'handlers': ['console_sql'],
+                'propagate': False,
+    }
 
 TEMPLATES += [
     {

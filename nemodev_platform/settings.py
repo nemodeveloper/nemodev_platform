@@ -39,7 +39,9 @@ EXTERNAL_APPS = [
 ]
 
 PROJECT_APPS = [
-    'src.apps.ext_user.apps.ExtUserConfig'
+    'src.apps.ext_user.apps.ExtUserConfig',
+    'src.apps.catalogs.apps.CatalogsConfig',
+    'src.apps.schedule.apps.ScheduleConfig',
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS + PROJECT_APPS
@@ -171,11 +173,25 @@ LOGGING = {
             'formatter': 'verbose',
             'filters': [],
         },
+        'catalogs_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 10 * 1024 * 1024,
+            'encoding': 'utf-8',
+            'filename': os.path.join(BASE_DIR, 'logs/catalogs.log'),
+            'formatter': 'verbose',
+            'filters': [],
+        },
     },
 
     'loggers': {
         'common_log': {
             'handlers': ['common_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'catalogs_log': {
+            'handlers': ['catalogs_file'],
             'level': 'INFO',
             'propagate': False,
         },
@@ -208,8 +224,8 @@ USE_I18N = True
 USE_L10N = False
 USE_TZ = False
 
-DATE_FORMAT = '%d-%m-%Y %H:%M'
-SHORT_DATE_FORMAT = '%d-%m-%Y'
+DATE_FORMAT = '%d.%m.%Y %H:%M'
+SHORT_DATE_FORMAT = '%d.%m.%Y'
 
 # End internationalization definition
 

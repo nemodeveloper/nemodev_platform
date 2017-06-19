@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% if form_mode == 'add' %}Форма добавление учебного кабинета
+        {% else %}Форма редактирования учебного кабинета
+        {% endif %}
+    </h1>
+    <form method="post" action="
+        {% if form_mode == 'add' %}{{ url('classroom_add_view') }}
+        {% else %}{{ url('classroom_update_view', id=form.instance.id) }}
+        {% endif %}">
+        {% csrf_token %}
+        <div>
+            <span>Название учебного кабинета</span>
+            {% if form.room_name.errors %} {{ form.room_name.errors }} {% endif %}
+            <input name="room_name" type="text" maxlength="20" size="20" value="{{ form.room_name.value() | default_if_none('') }}">
+        </div><br>
+        <div>
+            <span>Краткое название учебного кабинета</span>
+            {% if form.short_name.errors %} {{ form.short_name.errors }} {% endif %}
+            <input name="short_name" type="text" maxlength="10" size="10" value="{{ form.short_name.value() | default_if_none('') }}">
+        </div><br>
+        <div><input type="submit" value="Сохранить"></div>
+    </form>
+{% endblock %}

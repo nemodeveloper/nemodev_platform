@@ -13,4 +13,6 @@ python-dateutil==2.6.0
 
 django-environ==0.4.3
 
+telepot==10.5
+
 psycopg2

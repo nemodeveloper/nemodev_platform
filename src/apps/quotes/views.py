@@ -9,15 +9,13 @@ from django.views import View
 
 from nemodev_platform import settings
 from src.apps.quotes.telegram_bot_processor import get_processor
-
-from src.base.view.log import LogMixin
-from src.base.view.permission import CSRFExemptInMixin
-
+from src.core.view.log import LogFileMixin
+from src.core.view.permission import CSRFExemptMixin
 
 common_log = logging.getLogger('common_log')
 
 
-class QuoteTelegramBotView(CSRFExemptInMixin, LogMixin, View):
+class QuoteTelegramBotView(CSRFExemptMixin, LogFileMixin, View):
 
     def __init__(self, **kwargs):
         super(QuoteTelegramBotView, self).__init__(**kwargs)

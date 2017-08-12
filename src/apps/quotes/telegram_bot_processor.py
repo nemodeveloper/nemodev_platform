@@ -9,7 +9,7 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton, Inlin
 from nemodev_platform import settings
 
 from src.apps.quotes.models import Quote, Category, Author
-from src.base.view.log import LogMixin
+from src.core.view.log import LogFileMixin
 
 QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
 QuoteTelegramBot.setWebhook('https://quotesformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
@@ -56,7 +56,7 @@ def render_quote(func):
     return temp
 
 
-class BaseMessageProcessor(LogMixin):
+class BaseMessageProcessor(LogFileMixin):
 
     def __init__(self, user_message):
         super(BaseMessageProcessor, self).__init__()

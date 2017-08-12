@@ -19,7 +19,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
 
 from nemodev_platform import settings
-from src.apps.quotes.tastypie_api import QuoteResource, CategoryResource, AuthorResource
+
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index_view'),

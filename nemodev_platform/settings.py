@@ -76,6 +76,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'src.core.middleware.request.RequestMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -121,6 +122,21 @@ DATABASES = {
 
 # End database definition
 
+# Start internationalization definition
+# https://docs.djangoproject.com/en/1.10/topics/i18n/
+
+LANGUAGE_CODE = 'ru-RU'
+TIME_ZONE = 'Europe/Moscow'
+USE_I18N = True
+USE_L10N = False
+USE_TZ = False
+
+DATE_TIME_FORMAT_WITH_SEC = '%d.%m.%Y %H:%M:%S'
+DATE_TIME_FORMAT = '%d.%m.%Y %H:%M'
+DATE_FORMAT = '%d.%m.%Y'
+
+# End internationalization definition
+
 # Start logs definitions
 
 LOGGING = {
@@ -139,14 +155,14 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': u'[%(levelname)s] [%(asctime)s] [%(module)s] [%(process)d] [%(thread)d] [%(message)s]',
-            'datefmt': "%Y-%m-%d %H:%M:%S",
+            'datefmt': DATE_TIME_FORMAT_WITH_SEC,
         },
         'simple': {
             'format': u'[%(levelname)s] [%(message)s]'
         },
         'sql': {
             'format': u'[%(levelname)s] [%(asctime)s]\n[sql_duration=%(duration)s]\n[sql_text=%(sql)s]\n[sql_params=%(params)s]',
-            'datefmt': "%Y-%m-%d %H:%M:%S",
+            'datefmt': DATE_TIME_FORMAT_WITH_SEC,
         },
     },
 
@@ -166,6 +182,7 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 10 * 1024 * 1024,
+            'backupCount': 5,
             'encoding': 'utf-8',
             'filename': os.path.join(BASE_DIR, 'logs/common.log'),
             'formatter': 'verbose',
@@ -198,21 +215,6 @@ LOGGING = {
 }
 
 # End logs definitions
-
-# Start internationalization definition
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
-
-LANGUAGE_CODE = 'ru-RU'
-TIME_ZONE = 'Europe/Moscow'
-USE_I18N = True
-USE_L10N = False
-USE_TZ = False
-
-DATE_FORMAT = '%d-%m-%Y %H:%M'
-SHORT_DATE_FORMAT = '%d-%m-%Y'
-
-# End internationalization definition
-
 
 # Start static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

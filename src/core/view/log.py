@@ -4,10 +4,10 @@ import logging
 
 
 # Примись для логирования в конкретный LOG из settings.LOGGING
-class LogViewMixin(object):
+class LogFileMixin(object):
 
     def __init__(self):
-        super(LogViewMixin, self).__init__()
+        super(LogFileMixin, self).__init__()
         self.logger = logging.getLogger(self.get_log_name())
 
     # Получить имя лога

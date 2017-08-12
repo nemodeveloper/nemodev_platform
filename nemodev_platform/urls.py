@@ -17,9 +17,6 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
-from tastypie.api import Api
-
-from src.apps.ext_user.tastypie_api import ExtUserResource
 
 from nemodev_platform import settings
 
@@ -28,11 +25,8 @@ urlpatterns = [
 
 ]
 
-v1_api = Api(api_name='v1')
-v1_api.register(ExtUserResource())
-
 api_urlpatterns = [
-    url(r'^api/', include(v1_api.urls)),
+
 ]
 
 urlpatterns += api_urlpatterns

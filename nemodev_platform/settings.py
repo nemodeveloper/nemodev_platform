@@ -246,13 +246,13 @@ FILE_UPLOAD_HANDLERS = [
 
 # End static files (CSS, JavaScript, Images)
 
-# Start CSA definition
+# Start ESA definition
 
-LOGIN_URL = '/csa/login/'
-LOGOUT_URL = '/csa/logout/'
+LOGIN_URL = '/esa/login/'
+LOGOUT_URL = '/esa/logout/'
 AUTH_USER_MODEL = 'ext_user.ExtUser'
 
-# End CSA definition
+# End ESA definition
 
 # Start rest-framework config
 

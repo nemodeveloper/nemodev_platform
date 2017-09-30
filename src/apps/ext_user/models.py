@@ -1,8 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+from src.core.utils.datetime import current_date
 
 
 class UserManager(BaseUserManager):
@@ -27,8 +28,8 @@ class UserManager(BaseUserManager):
 
 class ExtUser(AbstractBaseUser, PermissionsMixin):
 
-    email = models.EmailField(_('Электронная почта'), max_length=255, unique=True, db_index=True)
-    register_date = models.DateField(_('Дата регистрации'), default=timezone.now())
+    login = models.CharField(_('Логин'), max_length=15, unique=True, db_index=True)
+    register_date = models.DateField(_('Дата регистрации'), default=current_date())
     is_active = models.BooleanField(_('Активен'), default=True)
     is_admin = models.BooleanField(_('Администратор'), default=False)
 
@@ -36,7 +37,7 @@ class ExtUser(AbstractBaseUser, PermissionsMixin):
         return self.get_short_name()
 
     def get_short_name(self):
-        return self.email
+        return self.login
 
     @property
     def is_staff(self):
@@ -45,7 +46,7 @@ class ExtUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.get_full_name()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'login'
     REQUIRED_FIELDS = []
 
     objects = UserManager()
@@ -53,7 +54,7 @@ class ExtUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('Пользователь')
         verbose_name_plural = _('Пользователи')
-        db_table = 'ext_user_user'
+        db_table = 'ext_user'
         default_permissions = ()
         permissions = (
             ('add_ext_user', 'Добавление пользователей'),

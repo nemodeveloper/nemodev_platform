@@ -39,7 +39,8 @@ EXTERNAL_APPS = [
 ]
 
 PROJECT_APPS = [
-    'src.apps.ext_user.apps.ExtUserConfig'
+    'src.apps.ext_user.apps.ExtUserConfig',
+    'src.apps.work_time.apps.WorkTimeConfig'
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS + PROJECT_APPS

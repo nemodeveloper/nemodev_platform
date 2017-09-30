@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 
 EXTERNAL_APPS = [
     'django_jinja2',
+    'rest_framework',
 ]
 
 PROJECT_APPS = [
@@ -254,12 +255,9 @@ AUTH_USER_MODEL = 'ext_user.ExtUser'
 
 # End CSA definition
 
-# Start tastypie config
+# Start rest-framework config
 
-TASTYPIE_ALLOW_MISSING_SLASH = True
-TASTYPIE_DEFAULT_FORMATS = ['json']
-
-# End tastypie config
+# End rest-framework config
 
 if DEBUG:
     from .settings_dev import *

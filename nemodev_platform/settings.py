@@ -268,12 +268,6 @@ AUTH_USER_MODEL = 'ext_user.ExtUser'
 
 # End CSA definition
 
-# Start tastypie config
-
-TASTYPIE_ALLOW_MISSING_SLASH = True
-TASTYPIE_DEFAULT_FORMATS = ['json']
-
-# End tastypie config
 
 # Start telegram bot config
 TELEGRAM_BOT_TOKEN = env.str('TELEGRAM_BOT_TOKEN', 'test')

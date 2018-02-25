@@ -31,6 +31,7 @@ class QuoteParser(object):
             self.raw_data = json.load(quote_file)
         print('Завершили парсинг файла %s !' % self.file_path)
 
+    @transaction.atomic()
     def _process_raw_data(self):
         print('Начинаем обработку сырых данных...')
 
@@ -58,7 +59,6 @@ class QuoteParser(object):
 
     def _create_quote(self, category, raw_quote):
 
-        with transaction.atomic():
             raw_text = raw_quote['text'].\
                 replace('&nbsp;', ' ').\
                 replace('<br>', '').strip()

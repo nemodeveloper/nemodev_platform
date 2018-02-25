@@ -12,7 +12,7 @@ from src.apps.quotes.models import Quote, Category, Author
 from src.core.view.log import LogFileMixin
 
 QuoteTelegramBot = telepot.Bot(settings.TELEGRAM_BOT_TOKEN)
-QuoteTelegramBot.setWebhook('https://quotesformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
+QuoteTelegramBot.setWebhook('https://quoteformuse.ru/quotes/bot/%s/' % settings.TELEGRAM_BOT_TOKEN)
 
 
 common_log = logging.getLogger('common_log')
